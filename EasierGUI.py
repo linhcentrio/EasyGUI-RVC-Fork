@@ -1614,7 +1614,11 @@ def mouth(size, face, voice, faces):
     return '/content/wav2lip-HD/outputs/result.mp4', 'Animation completed.'
 eleven_voices = ['Adam','Antoni','Josh','Arnold','Sam','Bella','Rachel','Domi','Elli']
 eleven_voices_ids=['pNInz6obpgDQGcFmaJgB','ErXwobaYiN019PkySvjV','TxGEqnHWrfWFTfGW9XjX','VR6AewLTigWG4xSOukaG','yoZ06aMxZJJ28mfd3POQ','EXAVITQu4vr4xnSDxMaL','21m00Tcm4TlvDq8ikWAM','AZnzlk1XvdvUeBnXmlld','MF3mGyEYCl7XYWbV9V6O']
-chosen_voice = dict(zip(eleven_voices, eleven_voices_ids))
+# Danh sách các giọng của GoogleTTS cho tiếng Việt
+vi_voices = ['vi-VN-Neural2-A', 'vi-VN-Standard-B']
+voice_choices = eleven_voices + vi_voices
+chosen_voice = dict(zip(voice_choices, eleven_voices_ids + vi_voices))
+
 def elevenTTS(xiapi, text, id, lang):
     if xiapi!= '' and id !='': 
         choice = chosen_voice[id]
@@ -1652,7 +1656,7 @@ def elevenTTS(xiapi, text, id, lang):
         aud_path = save_to_wav('./temp_eleven.mp3')
         return aud_path, aud_path
     else:
-        tts = gTTS(text, lang=lang)
+        tts = gTTS(text, lang=lang, tld='com.vn', accent=choice)
         tts.save('./temp_gTTS.mp3')
         aud_path = save_to_wav('./temp_gTTS.mp3')
         return aud_path, aud_path
@@ -1740,7 +1744,7 @@ with gr.Blocks(theme=gr.themes.Base()) as app:
                             with gr.Column():
                                 lang = gr.Radio(label='Chinese & Japanese do not work with ElevenLabs currently.',choices=['en','es','fr','pt','zh-CN','de','hi','ja', 'vi'], value='vi')
                                 api_box = gr.Textbox(label="Enter your API Key for ElevenLabs, or leave empty to use GoogleTTS", value='')
-                                elevenid=gr.Dropdown(label="Voice:", choices=eleven_voices)
+                                elevenid=gr.Dropdown(label="Voice:", choices=voice_choices)
                             with gr.Column():
                                 tfs = gr.Textbox(label="Input your Text", interactive=True, value="ChatGPT, là một chatbot do công ty OpenAI của Mỹ phát triển và ra mắt vào tháng 11 năm 2022. ChatGPT được xây dựng dựa trên GPT-3.5 - một dòng mô hình ngôn ngữ lớn của OpenAI đồng thời được tinh chỉnh bằng cả hai kỹ thuật học tăng cường lẫn học có giám sát.")
                                 tts_button = gr.Button(value="Speak")
