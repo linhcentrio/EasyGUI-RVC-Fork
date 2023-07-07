@@ -1619,6 +1619,13 @@ vi_voices = ['vi-VN-Neural2-A', 'vi-VN-Standard-B']
 voice_choices = eleven_voices + vi_voices
 chosen_voice = dict(zip(voice_choices, eleven_voices_ids + vi_voices))
 
+# Khi chọn ngôn ngữ, thay đổi lựa chọn giọng đọc phù hợp
+def update_voice_choices(lang):
+    if lang == 'vi':
+        return vi_voices
+    else:
+        return eleven_voices
+
 def elevenTTS(xiapi, text, id, lang):
     if xiapi!= '' and id !='': 
         choice = chosen_voice[id]
@@ -1744,7 +1751,9 @@ with gr.Blocks(theme=gr.themes.Base()) as app:
                             with gr.Column():
                                 lang = gr.Radio(label='Chinese & Japanese do not work with ElevenLabs currently.',choices=['en','es','fr','pt','zh-CN','de','hi','ja', 'vi'], value='vi')
                                 api_box = gr.Textbox(label="Enter your API Key for ElevenLabs, or leave empty to use GoogleTTS", value='')
+                                voice_choices = update_voice_choices(lang.value)
                                 elevenid=gr.Dropdown(label="Voice:", choices=voice_choices)
+                                lang.change(update_voice_choices, inputs=[lang], outputs=[elevenid])
                             with gr.Column():
                                 tfs = gr.Textbox(label="Input your Text", interactive=True, value="ChatGPT, là một chatbot do công ty OpenAI của Mỹ phát triển và ra mắt vào tháng 11 năm 2022. ChatGPT được xây dựng dựa trên GPT-3.5 - một dòng mô hình ngôn ngữ lớn của OpenAI đồng thời được tinh chỉnh bằng cả hai kỹ thuật học tăng cường lẫn học có giám sát.")
                                 tts_button = gr.Button(value="Speak")
