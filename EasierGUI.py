@@ -1627,46 +1627,50 @@ def update_voice_choices(lang):
         return eleven_voices
 
 def elevenTTS(xiapi, text, id, lang):
-    if xiapi!= '' and id !='': 
-        choice = chosen_voice[id]
-        CHUNK_SIZE = 1024
-        url = f"https://api.elevenlabs.io/v1/text-to-speech/{choice}"
-        headers = {
-        "Accept": "audio/mpeg",
-        "Content-Type": "application/json",
-        "xi-api-key": xiapi
-        }
-        if lang == 'en':
-            data = {
-            "text": text,
-            "model_id": "eleven_monolingual_v1",
-            "voice_settings": {
-            "stability": 0.5,
-            "similarity_boost": 0.5
-            }
-            }
-        else:
-            data = {
-            "text": text,
-            "model_id": "eleven_multilingual_v1",
-            "voice_settings": {
-            "stability": 0.5,
-            "similarity_boost": 0.5
-            }
-            }
-
-        response = requests.post(url, json=data, headers=headers)
-        with open('./temp_eleven.mp3', 'wb') as f:
-          for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
-              if chunk:
-                  f.write(chunk)
-        aud_path = save_to_wav('./temp_eleven.mp3')
-        return aud_path, aud_path
-    else:
-        tts = gTTS(text, lang=lang, tld='com.vn', accent=choice)
+    # Kiểm tra xem ngôn ngữ có phải là 'vi' hay không
+    if lang == 'vi':
+        # Nếu là 'vi', sử dụng gTTS
+        tts = gTTS(text, lang=lang, tld='com.vn', accent=id)
         tts.save('./temp_gTTS.mp3')
         aud_path = save_to_wav('./temp_gTTS.mp3')
         return aud_path, aud_path
+    else:
+        # Ngược lại, sử dụng ElevenLabs
+        choice = chosen_voice[id]
+        if xiapi != '' and id in eleven_voices:
+            CHUNK_SIZE = 1024
+            url = f"https://api.elevenlabs.io/v1/text-to-speech/{choice}"
+            headers = {
+                "Accept": "audio/mpeg",
+                "Content-Type": "application/json",
+                "xi-api-key": xiapi
+            }
+            if lang == 'en':
+                data = {
+                    "text": text,
+                    "model_id": "eleven_monolingual_v1",
+                    "voice_settings": {
+                        "stability": 0.5,
+                        "similarity_boost": 0.5
+                    }
+                }
+            else:
+                data = {
+                    "text": text,
+                    "model_id": "eleven_multilingual_v1",
+                    "voice_settings": {
+                        "stability": 0.5,
+                        "similarity_boost": 0.5
+                    }
+                }
+
+            response = requests.post(url, json=data, headers=headers)
+            with open('./temp_eleven.mp3', 'wb') as f:
+                for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
+                    if chunk:
+                        f.write(chunk)
+            aud_path = save_to_wav('./temp_eleven.mp3')
+            return aud_path, aud_path
 
 def upload_to_dataset(files, dir):
     if dir == '':
