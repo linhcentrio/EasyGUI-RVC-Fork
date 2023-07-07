@@ -1738,11 +1738,11 @@ with gr.Blocks(theme=gr.themes.Base()) as app:
                     with gr.Row():
                         with gr.Accordion('Text To Speech', open=False):
                             with gr.Column():
-                                lang = gr.Radio(label='Chinese & Japanese do not work with ElevenLabs currently.',choices=['en','es','fr','pt','zh-CN','de','hi','ja'], value='en')
+                                lang = gr.Radio(label='Chinese & Japanese do not work with ElevenLabs currently.',choices=['en','es','fr','pt','zh-CN','de','hi','ja', 'vi'], value='vi')
                                 api_box = gr.Textbox(label="Enter your API Key for ElevenLabs, or leave empty to use GoogleTTS", value='')
                                 elevenid=gr.Dropdown(label="Voice:", choices=eleven_voices)
                             with gr.Column():
-                                tfs = gr.Textbox(label="Input your Text", interactive=True, value="This is a test.")
+                                tfs = gr.Textbox(label="Input your Text", interactive=True, value="ChatGPT, là một chatbot do công ty OpenAI của Mỹ phát triển và ra mắt vào tháng 11 năm 2022. ChatGPT được xây dựng dựa trên GPT-3.5 - một dòng mô hình ngôn ngữ lớn của OpenAI đồng thời được tinh chỉnh bằng cả hai kỹ thuật học tăng cường lẫn học có giám sát.")
                                 tts_button = gr.Button(value="Speak")
                                 tts_button.click(fn=elevenTTS, inputs=[api_box,tfs, elevenid, lang], outputs=[record_button, input_audio0])
                     with gr.Row():
